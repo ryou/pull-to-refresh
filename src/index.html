@@ -23,12 +23,28 @@
     bottom: 100%;
     left: 0; right: 0;
   }
+  .loading .will,
+  .loading .wait {
+    display: none;
+  }
+  .loading.-will-update .will {
+    display: block;
+  }
+  .loading.-wait-response .wait {
+    display: block;
+  }
+  .loading.-will-update .pull,
+  .loading.-wait-response .pull {
+    display: none;
+  }
   </style>
 </head>
 <body>
   <div id="wrapper">
     <div class="loading">
-      <p>引っ張って更新</p>
+      <p class="pull">引っ張って更新</p>
+      <p class="will">離して更新</p>
+      <p class="wait">更新中</p>
     </div>
     <ul>
       <li>01</li>
@@ -134,12 +150,15 @@
     </ul>
   </div>
 
-  <script src="../dist/pulltorefresh.js"></script>
+  <script src="pulltorefresh.js"></script>
   <script>
     var wrapper = document.getElementById('wrapper');
-    var obj = PullToRefresh(wrapper, {
-      onUpdate: function() {
-        alert('test');
+    var loader = document.querySelector('#wrapper .loading');
+    var obj = PullToRefresh(wrapper, loader, {
+      onStartUpdate: function() {
+        setTimeout(function() {
+          obj.updateComplete();
+        }, 1000);
       },
     });
   </script>

@@ -1,5 +1,5 @@
 const PullToRefresh = require('./libs/PullToRefresh');
 
-const init = (el, options) => new PullToRefresh(el, options);
+const init = (wrapper, loader, options) => new PullToRefresh(wrapper, loader, options);
 
 window.PullToRefresh = init;

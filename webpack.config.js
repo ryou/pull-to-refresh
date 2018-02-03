@@ -9,8 +9,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   devServer: {
-    hot: true,
     open: true,
-    openPage: '/demo/',
+    contentBase: path.join(__dirname, 'src'),
   },
 };

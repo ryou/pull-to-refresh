@@ -1,3 +1,4 @@
+const $ = require('jquery');
 const _ = require('lodash');
 
 const STATUS = {
@@ -8,30 +9,35 @@ const STATUS = {
 };
 
 class PullToRefresh {
-  constructor(el, options) {
+  constructor(wrapper, loader, options) {
     const defaultOptions = {
-      onUpdate() {},
+      onStartUpdate() {
+        this.updateComplete();
+      },
+      willUpdateClass: '-will-update',
+      waitResponseClass: '-wait-response',
     };
 
-    this.el = el;
-    this.loaderHeight = 50;
+    this.wrapper = wrapper;
+    this.loader = loader;
+    this.loaderHeight = this.loader.offsetHeight;
     this.positionTop = 0;
     this.status = STATUS.normal;
     this.touchStart = {};
     this.pullStart = {};
     this.options = _.assign(defaultOptions, options);
 
-    el.addEventListener('touchstart', (e) => {
+    wrapper.addEventListener('touchstart', (e) => {
       this.onTouchStart(e);
     });
-    el.addEventListener('touchmove', (e) => {
+    wrapper.addEventListener('touchmove', (e) => {
       this.onTouchMove(e);
     }, { passive: false });
-    el.addEventListener('touchend', (e) => {
+    wrapper.addEventListener('touchend', (e) => {
       this.onTouchEnd(e);
     });
 
-    this.el.style.position = 'relative';
+    this.wrapper.style.position = 'relative';
   }
 
   static calcTouchPoint(e) {
@@ -88,12 +94,17 @@ class PullToRefresh {
 
       if (difference.y > 0) {
         this.positionTop = difference.y / 2;
+        this.wrapper.style.top = `${this.positionTop}px`;
 
-        this.el.style.top = `${this.positionTop}px`;
+        if (this.positionTop >= this.loaderHeight) {
+          this.loader.classList.add(this.options.willUpdateClass);
+        } else {
+          this.loader.classList.remove(this.options.willUpdateClass);
+        }
       } else {
         this.status = STATUS.normal;
         this.positionTop = 0;
-        this.el.style.top = this.positionTop;
+        this.wrapper.style.top = this.positionTop;
       }
 
       e.preventDefault();
@@ -105,20 +116,34 @@ class PullToRefresh {
       if (this.positionTop >= this.loaderHeight) {
         this.status = STATUS.update;
         this.positionTop = this.loaderHeight;
-        this.el.style.top = `${this.positionTop}px`;
-        setTimeout(() => {
-          this.options.onUpdate();
 
-          this.status = STATUS.normal;
-          this.positionTop = 0;
-          this.el.style.top = this.positionTop;
-        }, 1000);
+        this.loader.classList.remove(this.options.willUpdateClass);
+        this.loader.classList.add(this.options.waitResponseClass);
+
+        $(this.wrapper).animate({
+          top: `${this.positionTop}px`,
+        }, 150);
+
+        this.options.onStartUpdate();
       } else {
         this.status = STATUS.normal;
         this.positionTop = 0;
-        this.el.style.top = this.positionTop;
+
+        $(this.wrapper).animate({
+          top: `${this.positionTop}px`,
+        }, 150);
       }
     }
+  }
+
+  updateComplete() {
+    this.status = STATUS.normal;
+    this.positionTop = 0;
+    this.loader.classList.remove(this.options.waitResponseClass);
+
+    $(this.wrapper).animate({
+      top: `${this.positionTop}px`,
+    }, 150);
   }
 }
 
