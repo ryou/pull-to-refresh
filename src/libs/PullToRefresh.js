@@ -1,5 +1,6 @@
 const Velocity = require('velocity-animate');
 const _ = require('lodash');
+const calcVectorDirection = require('./calcVectorDirection');
 
 const STATUS = {
   normal: 0,
@@ -46,31 +47,6 @@ class PullToRefresh {
     };
   }
 
-  static calcVectorDirection(start, end) {
-    let direction;
-    const vector = {
-      x: end.x - start.x,
-      y: end.y - start.y,
-    };
-    const rad = Math.atan2(vector.y, vector.x);
-    let theta = (rad / (2 * Math.PI)) * 360; // -179.9999 ~ 180
-    theta = (theta < 0) ? 360 + theta : theta; // 0 ~ 359.9999
-
-    if (theta < 45) {
-      direction = 'right';
-    } else if (theta < 135) {
-      direction = 'down';
-    } else if (theta < 225) {
-      direction = 'left';
-    } else if (theta < 315) {
-      direction = 'up';
-    } else {
-      direction = 'right';
-    }
-
-    return direction;
-  }
-
   onTouchStart(e) {
     this.touchStart = PullToRefresh.calcTouchPoint(e);
   }
@@ -79,7 +55,7 @@ class PullToRefresh {
     const touch = PullToRefresh.calcTouchPoint(e);
 
     if (window.scrollY === 0 && this.status === STATUS.normal) {
-      const direction = PullToRefresh.calcVectorDirection(this.touchStart, touch);
+      const direction = calcVectorDirection(this.touchStart, touch);
 
       if (direction === 'down') {
         this.status = STATUS.pull;

@@ -1,0 +1,1 @@
+require('./calcVectorDirection.test')();
