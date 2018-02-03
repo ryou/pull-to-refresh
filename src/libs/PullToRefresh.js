@@ -21,7 +21,6 @@ class PullToRefresh {
     this.wrapper = wrapper;
     this.loader = loader;
     this.loaderHeight = this.loader.offsetHeight;
-    this.positionTop = 0;
     this.status = STATUS.normal;
     this.touchStart = {};
     this.pullStart = {};
@@ -93,18 +92,17 @@ class PullToRefresh {
       };
 
       if (difference.y > 0) {
-        this.positionTop = difference.y / 2;
-        this.wrapper.style.top = `${this.positionTop}px`;
+        const move = difference.y / 2;
+        this.wrapper.style.top = `${move}px`;
 
-        if (this.positionTop >= this.loaderHeight) {
+        if (move >= this.loaderHeight) {
           this.loader.classList.add(this.options.willUpdateClass);
         } else {
           this.loader.classList.remove(this.options.willUpdateClass);
         }
       } else {
         this.status = STATUS.normal;
-        this.positionTop = 0;
-        this.wrapper.style.top = this.positionTop;
+        this.wrapper.style.top = 0;
       }
 
       e.preventDefault();
@@ -113,25 +111,22 @@ class PullToRefresh {
 
   onTouchEnd() {
     if (this.status === STATUS.pull) {
-      if (this.positionTop >= this.loaderHeight) {
+      if (this.loader.classList.contains(this.options.willUpdateClass)) {
         this.status = STATUS.update;
-        this.positionTop = this.loaderHeight;
 
         this.loader.classList.remove(this.options.willUpdateClass);
         this.loader.classList.add(this.options.waitResponseClass);
 
         Velocity(this.wrapper, {
-          top: `${this.positionTop}px`,
+          top: `${this.loaderHeight}px`,
         }, {
           duration: 150,
         });
 
         this.options.onStartUpdate();
       } else {
-        this.positionTop = 0;
-
         Velocity(this.wrapper, {
-          top: `${this.positionTop}px`,
+          top: 0,
         }, {
           duration: 150,
           complete: () => {
@@ -143,11 +138,10 @@ class PullToRefresh {
   }
 
   updateComplete() {
-    this.positionTop = 0;
     this.loader.classList.remove(this.options.waitResponseClass);
 
     Velocity(this.wrapper, {
-      top: `${this.positionTop}px`,
+      top: 0,
     }, {
       duration: 150,
       complete: () => {
