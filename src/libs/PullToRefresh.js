@@ -1,4 +1,4 @@
-const $ = require('jquery');
+const Velocity = require('velocity-animate');
 const _ = require('lodash');
 
 const STATUS = {
@@ -120,30 +120,40 @@ class PullToRefresh {
         this.loader.classList.remove(this.options.willUpdateClass);
         this.loader.classList.add(this.options.waitResponseClass);
 
-        $(this.wrapper).animate({
+        Velocity(this.wrapper, {
           top: `${this.positionTop}px`,
-        }, 150);
+        }, {
+          duration: 150,
+        });
 
         this.options.onStartUpdate();
       } else {
-        this.status = STATUS.normal;
         this.positionTop = 0;
 
-        $(this.wrapper).animate({
+        Velocity(this.wrapper, {
           top: `${this.positionTop}px`,
-        }, 150);
+        }, {
+          duration: 150,
+          complete: () => {
+            this.status = STATUS.normal;
+          },
+        });
       }
     }
   }
 
   updateComplete() {
-    this.status = STATUS.normal;
     this.positionTop = 0;
     this.loader.classList.remove(this.options.waitResponseClass);
 
-    $(this.wrapper).animate({
+    Velocity(this.wrapper, {
       top: `${this.positionTop}px`,
-    }, 150);
+    }, {
+      duration: 150,
+      complete: () => {
+        this.status = STATUS.normal;
+      },
+    });
   }
 }
 
