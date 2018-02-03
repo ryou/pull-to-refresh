@@ -8,4 +8,9 @@ module.exports = {
     filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
   },
+  devServer: {
+    hot: true,
+    open: true,
+    openPage: '/demo/',
+  },
 };
