@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
@@ -24,3 +25,16 @@ module.exports = {
     contentBase: path.join(__dirname, 'src'),
   },
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.plugins = (module.exports.plugins || []).concat([
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: '"production"',
+      },
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+
+    }),
+  ]);
+}
