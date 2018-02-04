@@ -1,5 +1,4 @@
 const Velocity = require('velocity-animate');
-const _ = require('lodash');
 const calcVectorDirection = require('./calcVectorDirection');
 
 const STATUS = {
@@ -25,7 +24,7 @@ class PullToRefresh {
     this.status = STATUS.normal;
     this.touchStart = {};
     this.pullStart = {};
-    this.options = _.assign(defaultOptions, options);
+    this.options = Object.assign(defaultOptions, options);
 
     wrapper.addEventListener('touchstart', (e) => {
       this.onTouchStart(e);
