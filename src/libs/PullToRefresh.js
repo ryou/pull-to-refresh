@@ -88,18 +88,7 @@ class PullToRefresh {
   onTouchEnd() {
     if (this.status === STATUS.pull) {
       if (this.loader.classList.contains(this.options.willUpdateClass)) {
-        this.status = STATUS.update;
-
-        this.loader.classList.remove(this.options.willUpdateClass);
-        this.loader.classList.add(this.options.waitResponseClass);
-
-        Velocity(this.wrapper, {
-          top: `${this.loaderHeight}px`,
-        }, {
-          duration: 150,
-        });
-
-        this.options.onStartUpdate();
+        this.startUpdate();
       } else {
         Velocity(this.wrapper, {
           top: 0,
@@ -111,6 +100,21 @@ class PullToRefresh {
         });
       }
     }
+  }
+
+  startUpdate() {
+    this.status = STATUS.update;
+
+    this.loader.classList.remove(this.options.willUpdateClass);
+    this.loader.classList.add(this.options.waitResponseClass);
+
+    Velocity(this.wrapper, {
+      top: `${this.loaderHeight}px`,
+    }, {
+      duration: 150,
+    });
+
+    this.options.onStartUpdate();
   }
 
   updateComplete() {
